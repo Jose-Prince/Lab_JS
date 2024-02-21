@@ -32,10 +32,16 @@ async function optenerPosts(){
 }
 
 function crearChat(texto, id){
-    let nuevoChat = document.createElement("div");
+
+    
+
+    let nuevoChat = document.createElement("button");
     nuevoChat.className = "chat";
     nuevoChat.id = id;
     nuevoChat.innerText = texto;
+    nuevoChat.onclick = () => {
+        misPosts
+    }
     return nuevoChat;
 }
 
