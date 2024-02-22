@@ -47,6 +47,12 @@ div1.appendChild(div3);
 
 document.getElementById("mensaje").style.border = "1px solid " + border;
 document.getElementById("mensaje").style.backgroundColor = background;
+document.getElementById("mensaje").style.padding = "15px"
+document.getElementById("mensaje").style.display = "flex"
+document.getElementById("mensaje").style.alignItems = "flex-end"
+document.getElementById("mensaje").style.justifyContent = "flex-end"
+document.getElementById("mensaje").style.flexDirection = "column"
+
 
 let div4 = document.createElement("div");
 div4.id = "contenido-perfil";
@@ -135,20 +141,40 @@ let textbox = document.createElement("textarea");
 textbox.className = "text";
 div5.appendChild(textbox);
 
+document.getElementsByClassName("text")[0].addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
+        let contenido = document.getElementsByClassName("text")[0].value
+        if (contenido != "") {
+            createMessage(contenido);
+            document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
+        } 
+    }
+});
+
 document.getElementsByClassName("text")[0].style.height = "50%";
 document.getElementsByClassName("text")[0].style.width = "90%";
 document.getElementsByClassName("text")[0].style.backgroundColor = '#dfe3eb';
 document.getElementsByClassName("text")[0].style.resize = "none";
 document.getElementsByClassName("text")[0].style.fontSize = "16px"
 document.getElementsByClassName("text")[0].style.fontSize = "16px"
+document.getElementsByClassName("text")[0].maxLength="140"
+document.getElementsByClassName("text")[0].placeholder = "Mensaje"
 
 let send_button = document.createElement("button");
-send_button.id = "buttonM";
 send_button.style.borderRadius = "50%";
 send_button.style.height = "45px";
 send_button.style.width = "45px";
 send_button.style.backgroundColor = border;
 div5.appendChild(send_button);
+
+send_button.addEventListener("click", function() {
+    let contenido = document.getElementsByClassName("text")[0].value
+    if (contenido != "") {
+        createMessage(contenido);
+        document.getElementsByClassName("text")[0].value = "";
+    }
+});
 
 let sendI = document.createElement("img");
 sendI.id = "send";
@@ -158,3 +184,39 @@ document.getElementById("send").style.height = "32px";
 document.getElementById("send").style.width = "32px";
 document.getElementById("send").src = "https://static-00.iconduck.com/assets.00/send-icon-1024x1011-38wtwa0n.png";
 document.getElementById("send").style.margin = "4px 0px 0px 3px";
+
+function createMessage(contenido) {
+    console.log("Contenido recibido:", contenido);
+    let mensaje = document.createElement("div");
+
+    mensaje.style.backgroundColor = "red";
+    mensaje.style.color = "blue";
+    mensaje.style.margin = "5px 0px 0px 0px";
+    mensaje.style.padding = "5px";
+    mensaje.style.display = "flex";
+    mensaje.style.alignItems = "center";
+    mensaje.style.whiteSpace = "pre-line"
+
+    // Reemplazar saltos de línea por <br> y asignar el contenido al mensaje
+
+    if (contenido.length > 70) {
+    let phrase = "";
+    while (contenido.length > 70) {
+        let substring = contenido.substring(0, 70);
+        let lastSpaceIndex = substring.lastIndexOf(" ");
+        if (lastSpaceIndex !== -1) {
+            phrase += substring.substring(0, lastSpaceIndex + 1) + "\n";
+            contenido = contenido.slice(lastSpaceIndex + 1);
+        } else {
+            phrase += substring + "\n";
+            contenido = contenido.slice(70);
+        }
+    }
+    phrase += contenido;
+    mensaje.innerHTML = phrase;
+} else {
+    mensaje.innerHTML = contenido;
+}
+
+    div3.appendChild(mensaje);
+}
