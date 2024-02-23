@@ -52,7 +52,7 @@ document.getElementById("mensaje").style.display = "flex"
 document.getElementById("mensaje").style.alignItems = "flex-end"
 document.getElementById("mensaje").style.justifyContent = "flex-end"
 document.getElementById("mensaje").style.flexDirection = "column"
-
+document.getElementById("mensaje").style.overflow = "scroll"
 
 let div4 = document.createElement("div");
 div4.id = "contenido-perfil";
@@ -189,13 +189,14 @@ function createMessage(contenido) {
     console.log("Contenido recibido:", contenido);
     let mensaje = document.createElement("div");
 
-    mensaje.style.backgroundColor = "red";
-    mensaje.style.color = "blue";
-    mensaje.style.margin = "5px 0px 0px 0px";
-    mensaje.style.padding = "5px";
-    mensaje.style.display = "flex";
-    mensaje.style.alignItems = "center";
+    mensaje.style.backgroundColor = messages
+    mensaje.style.color = "black"
+    mensaje.style.marginTop = "5px"
+    mensaje.style.padding = "5px"
+    mensaje.style.display = "flex"
+    mensaje.style.alignItems = "center"
     mensaje.style.whiteSpace = "pre-line"
+    mensaje.style.width = "auto"
 
     // Reemplazar saltos de línea por <br> y asignar el contenido al mensaje
 
@@ -212,6 +213,7 @@ function createMessage(contenido) {
             contenido = contenido.slice(70);
         }
     }
+
     phrase += contenido;
     mensaje.innerHTML = phrase;
 } else {
