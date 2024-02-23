@@ -1,25 +1,5 @@
 document.body.style.margin = 0;
 
-async function obtainPosts(){
-    let data = await fetch("http://uwu-guate.site:3000/messages",
-    {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    })
-
-    console.log("await",data)
-    let posts = await data.json()
-    console.log(posts)
-
-    return posts
-}
-
-
-
-
-
 //Paleta de colores
 let background = "black";
 let border = "#9F2042";
@@ -241,4 +221,38 @@ function createMessage(contenido) {
 }
 
     div3.prepend(mensaje);
+}
+
+function createChat(user){
+    let newChat = document.createElement("div")
+    newChat
+}
+
+//ASYNC FUNCTIONS
+
+async function obtainPosts(){
+    let data = await fetch("http://uwu-guate.site:3000/messages",
+    {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+
+    console.log("await",data)
+    let posts = await data.json()
+    console.log(posts)
+
+    return posts
+}
+
+async function createChats(){
+    let myPosts = await optenerPosts()
+
+    let lista = document.getElementById("listado-chats")
+    if (lista != null){
+        myPosts.map(post=>{
+            let newChat = 0
+        })
+    }
 }
