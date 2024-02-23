@@ -1,5 +1,7 @@
 document.body.style.margin = 0;
 
+obtainPosts()
+
 //Paleta de colores
 let background = "black";
 let border = "#9F2042";
@@ -197,6 +199,15 @@ function createMessage(contenido) {
     mensaje.style.alignItems = "center"
     mensaje.style.whiteSpace = "pre-line"
     mensaje.style.width = "auto"
+    mensaje.animate([
+        // {transform: "translateX(0px)"},
+        {transform: "translateX(-300px)"},
+        {transform: "translateX(0px)"}
+    ],{
+        duration: 500,
+        iterations: 1,
+        fill: "forwards"
+    })
 
     // Reemplazar saltos de línea por <br> y asignar el contenido al mensaje
 
@@ -221,12 +232,14 @@ function createMessage(contenido) {
 }
 
     div3.prepend(mensaje);
+
+    div3.scrollTop = div3.scrollHeight
 }
 
-function createChat(user){
-    let newChat = document.createElement("div")
-    newChat
-}
+// function createChat(user){
+//     let newChat = document.createElement("div")
+//     newChat
+// }
 
 //ASYNC FUNCTIONS
 
