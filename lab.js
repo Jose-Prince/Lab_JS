@@ -1,5 +1,25 @@
 document.body.style.margin = 0;
 
+async function obtainPosts(){
+    let data = await fetch("http://uwu-guate.site:3000/messages",
+    {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+
+    console.log("await",data)
+    let posts = await data.json()
+    console.log(posts)
+
+    return posts
+}
+
+
+
+
+
 //Paleta de colores
 let background = "black";
 let border = "#9F2042";
@@ -50,8 +70,8 @@ document.getElementById("mensaje").style.backgroundColor = background;
 document.getElementById("mensaje").style.padding = "15px"
 document.getElementById("mensaje").style.display = "flex"
 document.getElementById("mensaje").style.alignItems = "flex-end"
-document.getElementById("mensaje").style.justifyContent = "flex-end"
-document.getElementById("mensaje").style.flexDirection = "column"
+document.getElementById("mensaje").style.justifyContent = "flex-start"
+document.getElementById("mensaje").style.flexDirection = "column-reverse"
 document.getElementById("mensaje").style.overflow = "scroll"
 
 let div4 = document.createElement("div");
@@ -220,5 +240,5 @@ function createMessage(contenido) {
     mensaje.innerHTML = contenido;
 }
 
-    div3.appendChild(mensaje);
+    div3.prepend(mensaje);
 }
