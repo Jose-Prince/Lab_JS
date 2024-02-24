@@ -1,6 +1,6 @@
 document.body.style.margin = 0;
 
-obtainPosts()
+user_name = "José Prince"
 
 //Paleta de colores
 let background = "black";
@@ -24,6 +24,13 @@ function actualizarColores() {
 
     document.getElementById("nombre").style.color = words;
 
+    document.getElementById("theme").style.backgroundColor = border
+
+    document.querySelectorAll(".chatting").forEach(elemento =>{
+        elemento.style.backgroundColor = chats
+        elemento.style.color = words
+        elemento.style.border = "1px solid " + border
+    })
 }
 
 let div1 = document.createElement("div");
@@ -33,8 +40,8 @@ document.body.appendChild(div1);
 document.getElementById("contenedor").style.display = "grid";
 document.getElementById("contenedor").style.gridTemplateColumns = "20% 80%";
 document.getElementById("contenedor").style.gridTemplateRows = "94% 6%";
-document.getElementById("contenedor").style.border = "1px solid border";
-document.getElementById("contenedor").style.height = "100vh";
+document.getElementById("contenedor").style.border = "1px solid " + border
+document.getElementById("contenedor").style.height = "99.8vh";
 
 let div2 = document.createElement("div");
 div2.id = "listado-chats";
@@ -42,6 +49,11 @@ div1.appendChild(div2);
 
 document.getElementById("listado-chats").style.border = "1px solid " + border;
 document.getElementById("listado-chats").style.backgroundColor = background;
+document.getElementById("listado-chats").style.display = "flex"
+document.getElementById("listado-chats").style.flexDirection = "column"
+document.getElementById("listado-chats").style.overflow = "auto"
+
+createChats()
 
 let div3 = document.createElement("div");
 div3.id = "mensaje";
@@ -54,7 +66,7 @@ document.getElementById("mensaje").style.display = "flex"
 document.getElementById("mensaje").style.alignItems = "flex-end"
 document.getElementById("mensaje").style.justifyContent = "flex-start"
 document.getElementById("mensaje").style.flexDirection = "column-reverse"
-document.getElementById("mensaje").style.overflow = "scroll"
+document.getElementById("mensaje").style.overflow = "auto"
 
 let div4 = document.createElement("div");
 div4.id = "contenido-perfil";
@@ -74,7 +86,7 @@ document.getElementById("contenido-chat").style.border = "1px solid " + border;
 document.getElementById("contenido-chat").style.backgroundColor = background;
 document.getElementById("contenido-chat").style.display = "flex";
 document.getElementById("contenido-chat").style.alignItems = "center";
-document.getElementById("contenido-chat").style.justifyContent = "space-evenly";
+document.getElementById("contenido-chat").style.justifyContent = "space-evenly"
 
 //Image de perfil
 let image = document.createElement("img");
@@ -90,7 +102,7 @@ let nombre_perfil = document.createElement("p");
 nombre_perfil.id = "nombre";
 div4.appendChild(nombre_perfil);
 
-document.getElementById("nombre").textContent = "José Prince";
+document.getElementById("nombre").textContent = user_name;
 document.getElementById("nombre").style.color = words;
 
 let color_switch = document.createElement("label");
@@ -99,16 +111,6 @@ color_switch.classList.add("switch");
 let switchInput = document.createElement("input");
 switchInput.type = "checkbox";
 switchInput.id = "toggleSwitch";
-
-if (localStorage.getItem("switchState") == "checked") {
-    switchInput.checked = true;
-    background = "white";
-    border = "9F2042";
-    messages = "#646E68";
-    chats = "#9BC995";
-    words = "black";
-    actualizarColores();
-}
 
 let slider = document.createElement("span");
 slider.classList.add("slider", "round");
@@ -149,6 +151,11 @@ document.getElementsByClassName("text")[0].addEventListener("keydown", function(
         let contenido = document.getElementsByClassName("text")[0].value
         if (contenido != "") {
             createMessage(contenido);
+            // let objeto = {
+                //     "username": user_name,
+            //     "message": contenido
+            // } 
+            // postPosts(objeto)
             document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
         } 
     }
@@ -164,19 +171,36 @@ document.getElementsByClassName("text")[0].maxLength="140"
 document.getElementsByClassName("text")[0].placeholder = "Mensaje"
 
 let send_button = document.createElement("button");
-send_button.style.borderRadius = "50%";
-send_button.style.height = "45px";
-send_button.style.width = "45px";
-send_button.style.backgroundColor = border;
+send_button.id = "theme"
 div5.appendChild(send_button);
+
+document.getElementById("theme").style.borderRadius = "50%";
+document.getElementById("theme").style.height = "45px";
+document.getElementById("theme").style.width = "45px";
+document.getElementById("theme").style.backgroundColor = border;
 
 send_button.addEventListener("click", function() {
     let contenido = document.getElementsByClassName("text")[0].value
     if (contenido != "") {
         createMessage(contenido);
+        // let objeto = {
+        //     "username": user_name,
+        //     "message": contenido
+        // } 
+        // postPosts(objeto)
         document.getElementsByClassName("text")[0].value = "";
     }
 });
+
+if (localStorage.getItem("switchState") == "checked") {
+    switchInput.checked = true;
+    background = "white";
+    border = "9F2042";
+    messages = "#646E68";
+    chats = "#9BC995";
+    words = "black";
+    actualizarColores();
+}
 
 let sendI = document.createElement("img");
 sendI.id = "send";
@@ -190,7 +214,7 @@ document.getElementById("send").style.margin = "4px 0px 0px 3px";
 function createMessage(contenido) {
     console.log("Contenido recibido:", contenido);
     let mensaje = document.createElement("div");
-
+    
     mensaje.style.backgroundColor = messages
     mensaje.style.color = "black"
     mensaje.style.marginTop = "5px"
@@ -198,7 +222,6 @@ function createMessage(contenido) {
     mensaje.style.display = "flex"
     mensaje.style.alignItems = "center"
     mensaje.style.whiteSpace = "pre-line"
-    mensaje.style.width = "auto"
     mensaje.animate([
         // {transform: "translateX(0px)"},
         {transform: "translateX(-300px)"},
@@ -208,9 +231,7 @@ function createMessage(contenido) {
         iterations: 1,
         fill: "forwards"
     })
-
-    // Reemplazar saltos de línea por <br> y asignar el contenido al mensaje
-
+    
     if (contenido.length > 70) {
     let phrase = "";
     while (contenido.length > 70) {
@@ -236,10 +257,22 @@ function createMessage(contenido) {
     div3.scrollTop = div3.scrollHeight
 }
 
-// function createChat(user){
-//     let newChat = document.createElement("div")
-//     newChat
-// }
+
+function createChat(user){
+    let newChat = document.createElement("button")
+    newChat.className = "chatting"
+    newChat.innerText = user
+    newChat.style.color = words
+    newChat.style.width = "100%"
+    newChat.style.minHeight = "6%"
+    newChat.style.backgroundColor = chats
+    newChat.style.display = "flex"
+    newChat.style.alignItems = "center"
+    newChat.style.justifyContent = "center"
+    newChat.style.border = "1px solid " + border
+    newChat.style.fontSize = "17px"
+    return newChat
+}
 
 //ASYNC FUNCTIONS
 
@@ -259,13 +292,34 @@ async function obtainPosts(){
     return posts
 }
 
+async function postPosts(object){
+    let data = await fetch("http://uwu-guate.site:3000/messages",
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(object)
+    })
+}
+
 async function createChats(){
-    let myPosts = await optenerPosts()
+    let names = []
+    let myPosts = await obtainPosts()
 
     let lista = document.getElementById("listado-chats")
     if (lista != null){
         myPosts.map(post=>{
-            let newChat = 0
+            let newChat = createChat(post[1])
+            return newChat
         })
+        .forEach(element => {
+            console.log(element.innerHTML)
+            if (!names.includes(element.innerHTML)){
+                lista.appendChild(element)
+                names.push(element.innerHTML)    
+            }
+        });
     }
+    console.log(names)
 }
