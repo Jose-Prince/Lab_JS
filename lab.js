@@ -1,6 +1,9 @@
 document.body.style.margin = 0;
 
-user_name = "José Prince"
+let user_name = "José Prince"
+let receptor = ""
+
+let databurned = [[300,"José Prince", "hola", "2024"],[1000,"José Prince", "adios", "2024"], [1,"José Prince", "Buenas", "2024"], [1,"Alex", "hola", "2024"]]
 
 //Paleta de colores
 let background = "black";
@@ -31,6 +34,10 @@ function actualizarColores() {
         elemento.style.color = words
         elemento.style.border = "1px solid " + border
     })
+
+    document.getElementById("top").style.backgroundColor = chats
+
+    document.getElementById("top").style.color = words
 }
 
 let div1 = document.createElement("div");
@@ -55,28 +62,49 @@ document.getElementById("listado-chats").style.overflow = "auto"
 
 createChats()
 
-let div3 = document.createElement("div");
-div3.id = "mensaje";
-div1.appendChild(div3);
+let  div3 = document.createElement("div")
+div3.id = "mensaje"
+div1.appendChild(div3)
 
-document.getElementById("mensaje").style.border = "1px solid " + border;
-document.getElementById("mensaje").style.backgroundColor = background;
-document.getElementById("mensaje").style.padding = "15px"
-document.getElementById("mensaje").style.display = "flex"
-document.getElementById("mensaje").style.alignItems = "flex-end"
-document.getElementById("mensaje").style.justifyContent = "flex-start"
-document.getElementById("mensaje").style.flexDirection = "column-reverse"
-document.getElementById("mensaje").style.overflow = "auto"
+document.getElementById("mensaje").style.border = "1px solid " + border
+document.getElementById("mensaje").style.backgroundColor = background
+
+let div3_1 = document.createElement("div")
+div3_1.id = "top"
+div3.appendChild(div3_1)
+
+document.getElementById("top").style.minHeight = "4.7%"
+document.getElementById("top").style.maxHeight = "4.7%"
+document.getElementById("top").style.backgroundColor = chats
+document.getElementById("top").style.border = "1px solid " + border
+document.getElementById("top").style.display = "flex"
+document.getElementById("top").style.alignItems = "center"
+document.getElementById("top").style.padding = "5px"
+document.getElementById("top").style.fontSize = "20px"
+document.getElementById("top").style.color = words
+
+let div3_2 = document.createElement("div")
+div3_2.id = "mensajes"
+div3.appendChild(div3_2)
+
+document.getElementById("mensajes").style.padding = "15px"
+document.getElementById("mensajes").style.display = "flex"
+document.getElementById("mensajes").style.alignItems = "flex-end"
+document.getElementById("mensajes").style.justifyContent = "flex-start"
+document.getElementById("mensajes").style.flexDirection = "column-reverse"
+document.getElementById("mensajes").style.overflow = "auto"
+document.getElementById("mensajes").style.maxHeight = "90%"
+document.getElementById("mensajes").style.minHeight = "90%"
 
 let div4 = document.createElement("div");
 div4.id = "contenido-perfil";
 div1.appendChild(div4);
 
-document.getElementById("contenido-perfil").style.border = "1px solid " + border;
-document.getElementById("contenido-perfil").style.backgroundColor = background;
-document.getElementById("contenido-perfil").style.display = "flex";
-document.getElementById("contenido-perfil").style.alignItems = "center";
-document.getElementById("contenido-perfil").style.justifyContent = "space-around";
+document.getElementById("contenido-perfil").style.border = "1px solid " + border
+document.getElementById("contenido-perfil").style.backgroundColor = background
+document.getElementById("contenido-perfil").style.display = "flex"
+document.getElementById("contenido-perfil").style.alignItems = "center"
+document.getElementById("contenido-perfil").style.justifyContent = "space-around"
 
 let div5 = document.createElement("div");
 div5.id = "contenido-chat";
@@ -190,7 +218,7 @@ send_button.addEventListener("click", function() {
         // postPosts(objeto)
         document.getElementsByClassName("text")[0].value = "";
     }
-});
+})
 
 if (localStorage.getItem("switchState") == "checked") {
     switchInput.checked = true;
@@ -214,6 +242,7 @@ document.getElementById("send").style.margin = "4px 0px 0px 3px";
 function createMessage(contenido) {
     console.log("Contenido recibido:", contenido);
     let mensaje = document.createElement("div");
+    mensaje.className = "message"
     
     mensaje.style.backgroundColor = messages
     mensaje.style.color = "black"
@@ -252,9 +281,9 @@ function createMessage(contenido) {
     mensaje.innerHTML = contenido;
 }
 
-    div3.prepend(mensaje);
+    div3_2.prepend(mensaje);
 
-    div3.scrollTop = div3.scrollHeight
+    div3_2.scrollTop = div3_2.scrollHeight
 }
 
 
@@ -271,6 +300,17 @@ function createChat(user){
     newChat.style.justifyContent = "center"
     newChat.style.border = "1px solid " + border
     newChat.style.fontSize = "17px"
+
+    newChat.addEventListener("click", function() {
+        receptor = newChat.innerHTML
+        
+        if (receptor != document.getElementById("top").innerHTML){
+            document.getElementById("top").innerHTML = receptor
+            getMessages(receptor)
+        }
+
+    })
+
     return newChat
 }
 
@@ -305,7 +345,8 @@ async function postPosts(object){
 
 async function createChats(){
     let names = []
-    let myPosts = await obtainPosts()
+    // let myPosts = await obtainPosts()
+    let myPosts = databurned //Cambiar cuando el server este funcionando
 
     let lista = document.getElementById("listado-chats")
     if (lista != null){
@@ -314,12 +355,24 @@ async function createChats(){
             return newChat
         })
         .forEach(element => {
-            console.log(element.innerHTML)
             if (!names.includes(element.innerHTML)){
                 lista.appendChild(element)
                 names.push(element.innerHTML)    
             }
-        });
+        })
     }
-    console.log(names)
+}
+
+async function getMessages(receptor){
+    document.getElementById("mensajes").innerHTML = ""
+
+    // let posts = await obtainPosts()
+    let posts = databurned //Cmabiar cuando el server este funcionando
+    posts.sort((a,b) => a[0] - b[0])
+
+    posts.forEach(element => {
+        if (element[1] == receptor){
+            createMessage(element[2])
+        }
+    })
 }
