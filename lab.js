@@ -1,10 +1,33 @@
 document.body.style.margin = 0;
 
+let posts = obtainPosts()
+
 const user_name = "José Prince"
 let receptor = ""
 let mondongo = false
 
-const databurned = [[300,"José Prince", "hola", "2024"],[1000,"José Prince", "adios", "2024"], [1,"José Prince", "Buenas", "2024"], [1,"Alex", "hola", "2024"],[700,"Alex","https://thumbs.dreamstime.com/z/dibujos-de-hongos-imagen-para-el-libro-colorear-naturaleza-forestal-y-alimentaci%C3%B3n-dibujo-animado-hierba-verde-247892429.jpg","70"]]
+async function miFuncion() {
+    let newPosts = await obtainPosts()
+
+    if (posts.length != newPosts.length){
+        posts = newPosts
+        getMessages(receptor)
+    }
+}
+
+// Establece el intervalo de tiempo en milisegundos (en este caso, cada 5 segundos)
+const intervaloTiempo = 10000; // 5000 milisegundos = 5 segundos
+
+// Llama a setInterval() y pasa la función y el intervalo de tiempo como parámetros
+const intervalID = setInterval(miFuncion, intervaloTiempo);
+
+
+const databurned = [[300,"José Prince", "hola", "2024"],[1000,"José Prince", "adios", "2024"], [1,"José Prince", "Buenas", "2024"], 
+[1000,"Alex", "hola", "2024"],
+[700,"Alex","https://thumbs.dreamstime.com/z/dibujos-de-hongos-imagen-para-el-libro-colorear-naturaleza-forestal-y-alimentaci%C3%B3n-dibujo-animado-hierba-verde-247892429.jpg","70"],
+[0,"Alex", "https://www.youtube.com/watch?v=95Yc_BYP1TA", "3262"], 
+[900,"Alex", "https://www.youtube.com/watch?v=95Yc_BYP1TA", "3262"],
+[9000,"Alex", "hola", "2024"]]
 
 //Paleta de colores
 let background = "black";
@@ -132,24 +155,27 @@ document.getElementById("search").style.fontSize = "16px"
 document.getElementById("search").maxLength="140"
 document.getElementById("search").placeholder = "Buscar"
 
-document.getElementById("search").addEventListener("input", function() {
-    console.log(document.getElementById("search").value)
-
+document.getElementById("search").addEventListener("input", async function() {
     if (document.getElementById("search").value != ""){
         document.getElementById("mensajes").innerHTML = ""
 
-        // const posts = await obtainPosts()
-        const posts = databurned //Cmabiar cuando el server este funcionando
+        const posts = await obtainPosts()
         
         const mensajesFiltrados = posts.filter(elemento => {
-            const nombre = elemento[1]
-            const mensaje = elemento[2]
+            const nombre = elemento.username
+            const mensaje = elemento.content
     
             return nombre == receptor && mensaje.toLowerCase().includes(document.getElementById("search").value.toLowerCase())
         })
     
         mensajesFiltrados.forEach(element => {
-            createMessage(element[2], mondongo)
+            if (regexEv(element.content) == 0){
+                createImage(element.content, mondongo)
+            } else if (regexEv(element.content) == 1) {
+                urlPreview(element.content,mondongo)
+            } else {
+                createMessage(element.content, mondongo)
+            } 
         })
     } else {
         getMessages(receptor)
@@ -231,7 +257,6 @@ switchInput.addEventListener("change", function() {
         words = "black";
         actualizarColores();
     } else {
-        console.log("Switch desactivado");
         localStorage.setItem("switchState", "unchecked");
         background = "black";
         border = "#9F2042";
@@ -250,24 +275,21 @@ document.getElementsByClassName("text")[0].addEventListener("keydown", function(
     if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
         const contenido = document.getElementsByClassName("text")[0].value
-                
-        const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
-
-        if (regexEv(contenido)){
+        if (contenido != "") {
             mondongo = true
-            createImage(contenido, mondongo)
-        } else {
-            if (contenido != "") {
-                mondongo = true
+            if (regexEv(contenido) == 0){
+                createImage(contenido, mondongo)
+            } else if (regexEv(contenido) == 1) {
+                urlPreview(contenido,mondongo)
+            } else {
                 createMessage(contenido, mondongo)
-                // div3_2.style.alignItems = "flex-end"
-                // const objeto = {
-                    //     "username": user_name,
-                //     "message": contenido
-                // } 
-                // postPosts(objeto)
             } 
-        }        
+            const objeto = {
+                "username": user_name,
+                "message": contenido
+            } 
+            postPosts(objeto)
+        }    
         document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
     }
 })
@@ -294,24 +316,21 @@ send_button.addEventListener("click", function() {
     if (contenido != "") {
         const contenido = document.getElementsByClassName("text")[0].value
                 
-        const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
-
-        if (regexEv(contenido)){
+        if (contenido != "") {
             mondongo = true
-            createImage(contenido, mondongo)
-        } else {
-            if (contenido != "") {
-                mondongo = true
-                createMessage(contenido, mondongo)
+            if (regexEv(contenido) == 0){
+                createImage(contenido, mondongo)
+            } else if (regexEv(contenido) == 1) {
                 urlPreview(contenido,mondongo)
-                // div3_2.style.alignItems = "flex-end"
-                // const objeto = {
-                    //     "username": user_name,
-                //     "message": contenido
-                // } 
-                // postPosts(objeto)
+            } else {
+                createMessage(contenido, mondongo)
             } 
-        }        
+            const objeto = {
+                "username": user_name,
+                "message": contenido
+            } 
+            postPosts(objeto)
+        }      
         document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
     }
 })
@@ -394,7 +413,7 @@ function createImage(url, mondongo) {
     mensaje.style.alignItems = "center"
     mensaje.style.justifyContent = "flex-end"
     mensaje.style.whiteSpace = "pre-line"
-    mensaje.style.width = "25%"
+    mensaje.style.width = "40%"
     mensaje.animate([
         {transform: "translateX(-300px)"},
         {transform: "translateX(0px)"}
@@ -450,9 +469,11 @@ function regexEv(url){
     const imageRegex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*\.(?:jpg|jpeg|png|gif)\b/i;
     const webpageRegex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*\b/i;
     if (imageRegex.test(url)){
-        return true
+        return 0
     } else if (webpageRegex.test(url)) {
-        return false
+        return 1
+    } else {
+        return 2
     }
 
 }
@@ -468,9 +489,7 @@ async function obtainPosts(){
         }
     })
 
-    console.log("await",data)
     const posts = await data.json()
-    console.log(posts)
 
     return posts
 }
@@ -488,13 +507,12 @@ async function postPosts(object){
 
 async function createChats(){
     const names = []
-    // const myPosts = await obtainPosts()
-    const myPosts = databurned //Cambiar cuando el server este funcionando
+    const myPosts = await obtainPosts()
 
     const lista = document.getElementById("listado-chats")
     if (lista != null){
         myPosts.map(post=>{
-            const newChat = createChat(post[1])
+            const newChat = createChat(post.username)
             return newChat
         })
         .forEach(element => {
@@ -506,29 +524,25 @@ async function createChats(){
     }
 }
 
-async function getMessages(receptor){
-    document.getElementById("mensajes").innerHTML = ""
+async function getMessages(receptor) {
+    document.getElementById("mensajes").innerHTML = "";
 
-    // const posts = await obtainPosts()
-    const posts = databurned //Cmabiar cuando el server este funcionando
-    posts.sort((a,b) => a[0] - b[0])
+    const posts = await obtainPosts(); // Esperamos a que se obtengan los mensajes
 
-    mondongo = false
+    mondongo = false;
 
-    posts.forEach(element => {
-        if (element[1] == receptor){
-
-            const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
-
-            if (regex.test(element[2])){
-                createImage(element[2], mondongo)
+    // Usamos un bucle for...of en lugar de forEach para poder utilizar async/await correctamente
+    for (const element of posts) {
+        if (element.username === receptor) {
+            if (regexEv(element.content) === 0) {
+                createImage(element.content, mondongo);
+            } else if (regexEv(element.content) === 1) {
+                await urlPreview(element.content, mondongo); // Esperamos a que se complete la llamada a urlPreview
             } else {
-                if (element[2] != "") {
-                    createMessage(element[2], mondongo)
-                } 
-            } 
+                createMessage(element.content, mondongo);
+            }
         }
-    })
+    }
 }
 
 
@@ -564,11 +578,6 @@ async function urlData(url){
 
 async function urlPreview(url, mondongo){
     const data = await urlData(url)
-
-    console.log(data.title)
-    console.log(data.description)
-    console.log(data.image)
-    console.log(data.url)
 
     const mensaje = document.createElement("div")
     mensaje.className = "message"
