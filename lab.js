@@ -4,7 +4,7 @@ const user_name = "José Prince"
 let receptor = ""
 let mondongo = false
 
-const databurned = [[300,"José Prince", "hola", "2024"],[1000,"José Prince", "adios", "2024"], [1,"José Prince", "Buenas", "2024"], [1,"Alex", "hola", "2024"]]
+const databurned = [[300,"José Prince", "hola", "2024"],[1000,"José Prince", "adios", "2024"], [1,"José Prince", "Buenas", "2024"], [1,"Alex", "hola", "2024"],[700,"Alex","https://thumbs.dreamstime.com/z/dibujos-de-hongos-imagen-para-el-libro-colorear-naturaleza-forestal-y-alimentaci%C3%B3n-dibujo-animado-hierba-verde-247892429.jpg","70"]]
 
 //Paleta de colores
 let background = "black";
@@ -253,7 +253,7 @@ document.getElementsByClassName("text")[0].addEventListener("keydown", function(
                 
         const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
 
-        if (regex.test(contenido)){
+        if (regexEv(contenido)){
             mondongo = true
             createImage(contenido, mondongo)
         } else {
@@ -292,18 +292,18 @@ document.getElementById("theme").style.backgroundColor = border;
 send_button.addEventListener("click", function() {
     const contenido = document.getElementsByClassName("text")[0].value
     if (contenido != "") {
-        event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
         const contenido = document.getElementsByClassName("text")[0].value
                 
         const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
 
-        if (regex.test(contenido)){
+        if (regexEv(contenido)){
             mondongo = true
             createImage(contenido, mondongo)
         } else {
             if (contenido != "") {
                 mondongo = true
                 createMessage(contenido, mondongo)
+                urlPreview(contenido,mondongo)
                 // div3_2.style.alignItems = "flex-end"
                 // const objeto = {
                     //     "username": user_name,
@@ -446,6 +446,17 @@ function createChat(user){
     return newChat
 }
 
+function regexEv(url){
+    const imageRegex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*\.(?:jpg|jpeg|png|gif)\b/i;
+    const webpageRegex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*\b/i;
+    if (imageRegex.test(url)){
+        return true
+    } else if (webpageRegex.test(url)) {
+        return false
+    }
+
+}
+
 //ASYNC FUNCTIONS
 
 async function obtainPosts(){
@@ -502,9 +513,107 @@ async function getMessages(receptor){
     const posts = databurned //Cmabiar cuando el server este funcionando
     posts.sort((a,b) => a[0] - b[0])
 
+    mondongo = false
+
     posts.forEach(element => {
         if (element[1] == receptor){
-            createMessage(element[2])
+
+            const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
+
+            if (regex.test(element[2])){
+                createImage(element[2], mondongo)
+            } else {
+                if (element[2] != "") {
+                    createMessage(element[2], mondongo)
+                } 
+            } 
         }
     })
+}
+
+
+async function urlData(url){
+    // URL de la API de Link Preview y enlace que deseas obtener una vista previa
+    const linkPreviewAPI = 'https://api.linkpreview.net';
+    const urlToPreview = url;
+
+    // Parámetros de la solicitud (generalmente incluyendo tu clave de API si es necesaria)
+    const apiKey = '63b3e6507fbcea99ddae13234a339174'; // Reemplaza 'tu_clave_de_api' con tu clave real
+    const queryParams = new URLSearchParams({
+    key: apiKey,
+    q: urlToPreview
+    });
+
+    // URL completa con parámetros de consulta
+    const requestURL = `${linkPreviewAPI}?${queryParams}`;    
+
+    const info = fetch(requestURL)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('La solicitud no fue exitosa');
+    }
+    return response.json();
+  })
+  .catch(error => {
+    // Manejar errores de la solicitud aquí
+    console.error('Error al obtener la vista previa del enlace:', error);
+  })
+
+  return info
+}
+
+async function urlPreview(url, mondongo){
+    const data = await urlData(url)
+
+    console.log(data.title)
+    console.log(data.description)
+    console.log(data.image)
+    console.log(data.url)
+
+    const mensaje = document.createElement("div")
+    mensaje.className = "message"
+
+    mensaje.style.backgroundColor = messages
+    mensaje.style.color = "black"
+    mensaje.style.marginTop = "5px"
+    mensaje.style.padding = "5px"
+    mensaje.style.display = "flex"
+    mensaje.style.alignItems = "center"
+    mensaje.style.flexDirection = "column"
+    mensaje.style.whiteSpace = "pre-line"
+    mensaje.style.width = "40%"
+    mensaje.animate([
+        {transform: "translateX(-300px)"},
+        {transform: "translateX(0px)"}
+    ],{
+        duration: 500,
+        iterations: 1,
+        fill: "forwards"
+    })
+
+    const image = document.createElement("img")
+    image.src = data.image
+    image.className = "imagen"
+    image.style.width = "100%"
+    mensaje.appendChild(image)
+
+    const titulo = document.createElement("p")
+    titulo.textContent = data.title
+    mensaje.appendChild(titulo)
+
+    const descripcion = document.createElement("p")
+    descripcion.textContent = data.description
+    mensaje.appendChild(descripcion)
+
+    const link = document.createElement("a")
+    link.href = data.url
+    link.innerHTML = data.url
+    mensaje.appendChild(link)
+
+    const div3_2_1 = document.createElement("div")
+    div3_2_1.style.display = "flex"
+    div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start"
+    div3_2.prepend(div3_2_1)
+    div3_2_1.append(mensaje);
+    div3_2.scrollTop = div3_2.scrollHeight 
 }
