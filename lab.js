@@ -292,13 +292,27 @@ document.getElementById("theme").style.backgroundColor = border;
 send_button.addEventListener("click", function() {
     const contenido = document.getElementsByClassName("text")[0].value
     if (contenido != "") {
-        createMessage(contenido);
-        // const objeto = {
-        //     "username": user_name,
-        //     "message": contenido
-        // } 
-        // postPosts(objeto)
-        document.getElementsByClassName("text")[0].value = "";
+        event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
+        const contenido = document.getElementsByClassName("text")[0].value
+                
+        const regex = /\b(?:https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]/i
+
+        if (regex.test(contenido)){
+            mondongo = true
+            createImage(contenido, mondongo)
+        } else {
+            if (contenido != "") {
+                mondongo = true
+                createMessage(contenido, mondongo)
+                // div3_2.style.alignItems = "flex-end"
+                // const objeto = {
+                    //     "username": user_name,
+                //     "message": contenido
+                // } 
+                // postPosts(objeto)
+            } 
+        }        
+        document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
     }
 })
 
@@ -380,7 +394,7 @@ function createImage(url, mondongo) {
     mensaje.style.alignItems = "center"
     mensaje.style.justifyContent = "flex-end"
     mensaje.style.whiteSpace = "pre-line"
-    mensaje.style.width = "56%"
+    mensaje.style.width = "25%"
     mensaje.animate([
         {transform: "translateX(-300px)"},
         {transform: "translateX(0px)"}
@@ -416,7 +430,7 @@ function createChat(user){
     newChat.style.alignItems = "center"
     newChat.style.justifyContent = "center"
     newChat.style.border = "1px solid " + border
-    // newChat.style.fontSize = "17px"
+    newChat.style.fontSize = "17px"
 
 
     newChat.addEventListener("click", function() {
