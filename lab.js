@@ -14,33 +14,63 @@ let chats = "#267891";
 let words = "#F8E5EE";
 
 function actualizarColores() {
-    document.getElementById("listado-chats").style.border = "1px solid " + border;
-    document.getElementById("listado-chats").style.backgroundColor = background;
+    const listadoChats = document.getElementById("listado-chats");
+    if (listadoChats) {
+        listadoChats.style.border = "1px solid " + border;
+        listadoChats.style.backgroundColor = background;
+    }
 
-    document.getElementById("mensaje").style.border = "1px solid " + border;
-    document.getElementById("mensaje").style.backgroundColor = background;
+    const mensaje = document.getElementById("mensaje");
+    if (mensaje) {
+        mensaje.style.border = "1px solid " + border;
+        mensaje.style.backgroundColor = background;
+    }
 
-    document.getElementById("contenido-perfil").style.border = "1px solid " + border;
-    document.getElementById("contenido-perfil").style.backgroundColor = background;
+    const contenidoPerfil = document.getElementById("contenido-perfil");
+    if (contenidoPerfil) {
+        contenidoPerfil.style.border = "1px solid " + border;
+        contenidoPerfil.style.backgroundColor = background;
+    }
 
-    document.getElementById("contenido-chat").style.border = "1px solid " + border;
-    document.getElementById("contenido-chat").style.backgroundColor = background;
+    const contenidoChat = document.getElementById("contenido-chat");
+    if (contenidoChat) {
+        contenidoChat.style.border = "1px solid " + border;
+        contenidoChat.style.backgroundColor = background;
+    }
 
-    document.getElementById("nombre").style.color = words;
+    const nombre = document.getElementById("nombre");
+    if (nombre) {
+        nombre.style.color = words;
+    }
 
-    document.getElementById("theme").style.backgroundColor = border
+    const theme = document.getElementById("theme");
+    if (theme) {
+        theme.style.backgroundColor = border;
+    }
 
-    document.querySelectorAll(".chatting").forEach(elemento =>{
-        elemento.style.backgroundColor = chats
-        elemento.style.color = words
-        elemento.style.border = "1px solid " + border
-    })
+    const chattingElements = document.querySelectorAll(".chatting");
+    if (chattingElements) {
+        chattingElements.forEach(elemento => {
+            elemento.style.backgroundColor = chats;
+            elemento.style.color = words;
+            elemento.style.border = "1px solid " + border;
+        });
+    }
 
-    document.getElementById("top").style.backgroundColor = chats
+    const top = document.getElementById("top");
+    if (top) {
+        top.style.backgroundColor = chats;
+        top.style.color = words;
+    }
 
-    document.getElementById("top").style.color = words
-    
+    const messageElements = document.getElementsByClassName("message");
+    if (messageElements && messageElements.length > 0) {
+        for (let i = 0; i < messageElements.length; i++) {
+            messageElements[i].style.backgroundColor = messages;
+        }
+    }
 }
+
 
 const div1 = document.createElement("div");
 div1.id = "contenedor";
