@@ -1,33 +1,32 @@
 document.body.style.margin = 0;
 
 let posts = obtainPosts()
+let myPosts = null
 
 const user_name = "José Prince"
-let receptor = ""
+let receptor = "Grupal"
 let mondongo = false
 
 async function miFuncion() {
+
     let newPosts = await obtainPosts()
 
-    if (posts.length != newPosts.length){
-        posts = newPosts
-        getMessages(receptor)
-    }
+    myPosts = newPosts.filter(message1 => !posts.some(message2 => message2.id === message1.id))
+
+    if (myPosts.length > 0){
+        if (receptor === "Grupal") {
+            sendChats(myPosts)
+        } else {
+            posts = newPosts
+            getMessages(receptor)
+        }
+    } 
 }
 
-// Establece el intervalo de tiempo en milisegundos (en este caso, cada 5 segundos)
-const intervaloTiempo = 10000; // 5000 milisegundos = 5 segundos
+const intervaloTiempo = 10000
 
 // Llama a setInterval() y pasa la función y el intervalo de tiempo como parámetros
 const intervalID = setInterval(miFuncion, intervaloTiempo);
-
-
-const databurned = [[300,"José Prince", "hola", "2024"],[1000,"José Prince", "adios", "2024"], [1,"José Prince", "Buenas", "2024"], 
-[1000,"Alex", "hola", "2024"],
-[700,"Alex","https://thumbs.dreamstime.com/z/dibujos-de-hongos-imagen-para-el-libro-colorear-naturaleza-forestal-y-alimentaci%C3%B3n-dibujo-animado-hierba-verde-247892429.jpg","70"],
-[0,"Alex", "https://www.youtube.com/watch?v=95Yc_BYP1TA", "3262"], 
-[900,"Alex", "https://www.youtube.com/watch?v=95Yc_BYP1TA", "3262"],
-[9000,"Alex", "hola", "2024"]]
 
 //Paleta de colores
 let background = "black";
@@ -139,7 +138,8 @@ document.getElementById("top").style.padding = "15px"
 document.getElementById("top").style.fontSize = "20px"
 document.getElementById("top").style.color = words
 
-const receptorName = document.createElement("p")
+const receptorName = document.createElement("div")
+receptorName.innerHTML = receptor
 div3_1.appendChild(receptorName)
 
 const div3_1_2 = document.createElement("textarea")
@@ -165,10 +165,14 @@ document.getElementById("search").addEventListener("input", async function() {
             const nombre = elemento.username
             const mensaje = elemento.content
     
-            return nombre == receptor && mensaje.toLowerCase().includes(document.getElementById("search").value.toLowerCase())
+            return (nombre == receptor || receptor == "Grupal") && mensaje.toLowerCase().includes(document.getElementById("search").value.toLowerCase())
         })
     
         mensajesFiltrados.forEach(element => {
+            const name = document.createElement("p")
+            name.textContent = element.username
+            name.style.color = "white"
+            div3_2.prepend(name)
             if (regexEv(element.content) == 0){
                 createImage(element.content, mondongo)
             } else if (regexEv(element.content) == 1) {
@@ -178,7 +182,11 @@ document.getElementById("search").addEventListener("input", async function() {
             } 
         })
     } else {
-        getMessages(receptor)
+        if (receptor == "Grupal"){
+            sendChats()
+        } else {
+            getMessages(receptor)
+        }
     }
 })
 
@@ -276,6 +284,11 @@ document.getElementsByClassName("text")[0].addEventListener("keydown", function(
         event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
         const contenido = document.getElementsByClassName("text")[0].value
         if (contenido != "") {
+            const name = document.createElement("p")
+            name.textContent = user_name
+            name.style.color = "white"
+            div3_2.prepend(name)
+            name.style.alignSelf = "flex-end"
             mondongo = true
             if (regexEv(contenido) == 0){
                 createImage(contenido, mondongo)
@@ -317,6 +330,11 @@ send_button.addEventListener("click", function() {
         const contenido = document.getElementsByClassName("text")[0].value
                 
         if (contenido != "") {
+            const name = document.createElement("p")
+            name.textContent = user_name
+            name.style.color = "white"
+            div3_2.prepend(name)
+            name.style.alignSelf = "flex-end"
             mondongo = true
             if (regexEv(contenido) == 0){
                 createImage(contenido, mondongo)
@@ -577,52 +595,103 @@ async function urlData(url){
 }
 
 async function urlPreview(url, mondongo){
-    const data = await urlData(url)
+    // const data = await urlData(url)
 
-    const mensaje = document.createElement("div")
-    mensaje.className = "message"
+    // const mensaje = document.createElement("div")
+    // mensaje.className = "message"
 
-    mensaje.style.backgroundColor = messages
-    mensaje.style.color = "black"
-    mensaje.style.marginTop = "5px"
-    mensaje.style.padding = "5px"
-    mensaje.style.display = "flex"
-    mensaje.style.alignItems = "center"
-    mensaje.style.flexDirection = "column"
-    mensaje.style.whiteSpace = "pre-line"
-    mensaje.style.width = "40%"
-    mensaje.animate([
-        {transform: "translateX(-300px)"},
-        {transform: "translateX(0px)"}
-    ],{
-        duration: 500,
-        iterations: 1,
-        fill: "forwards"
-    })
+    // mensaje.style.backgroundColor = messages
+    // mensaje.style.color = "black"
+    // mensaje.style.marginTop = "5px"
+    // mensaje.style.padding = "5px"
+    // mensaje.style.display = "flex"
+    // mensaje.style.alignItems = "center"
+    // mensaje.style.flexDirection = "column"
+    // mensaje.style.whiteSpace = "pre-line"
+    // mensaje.style.width = "40%"
+    // mensaje.animate([
+    //     {transform: "translateX(-300px)"},
+    //     {transform: "translateX(0px)"}
+    // ],{
+    //     duration: 500,
+    //     iterations: 1,
+    //     fill: "forwards"
+    // })
 
-    const image = document.createElement("img")
-    image.src = data.image
-    image.className = "imagen"
-    image.style.width = "100%"
-    mensaje.appendChild(image)
+    // const image = document.createElement("img")
+    // image.src = data.image
+    // image.className = "imagen"
+    // image.style.width = "100%"
+    // mensaje.appendChild(image)
 
-    const titulo = document.createElement("p")
-    titulo.textContent = data.title
-    mensaje.appendChild(titulo)
+    // const titulo = document.createElement("p")
+    // titulo.textContent = data.title
+    // mensaje.appendChild(titulo)
 
-    const descripcion = document.createElement("p")
-    descripcion.textContent = data.description
-    mensaje.appendChild(descripcion)
+    // const descripcion = document.createElement("p")
+    // descripcion.textContent = data.description
+    // mensaje.appendChild(descripcion)
 
-    const link = document.createElement("a")
-    link.href = data.url
-    link.innerHTML = data.url
-    mensaje.appendChild(link)
+    // const link = document.createElement("a")
+    // link.href = data.url
+    // link.innerHTML = data.url
+    // mensaje.appendChild(link)
 
-    const div3_2_1 = document.createElement("div")
-    div3_2_1.style.display = "flex"
-    div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start"
-    div3_2.prepend(div3_2_1)
-    div3_2_1.append(mensaje);
-    div3_2.scrollTop = div3_2.scrollHeight 
+    // const div3_2_1 = document.createElement("div")
+    // div3_2_1.style.display = "flex"
+    // div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start"
+    // div3_2.prepend(div3_2_1)
+    // div3_2_1.append(mensaje);
+    // div3_2.scrollTop = div3_2.scrollHeight 
 }
+
+async function sendChats(mensaje) {
+    document.getElementById("mensajes").innerHTML = "";
+
+    const posts = await obtainPosts(); // Esperamos a que se obtengan los mensajes
+
+    // Usamos un bucle for...of en lugar de forEach para poder utilizar async/await correctamente
+    if (mensaje != null){
+        for (const element of mensaje){
+            mondongo = false;
+            const name = document.createElement("p")
+            name.textContent = element.username
+            name.style.color = "white"
+            div3_2.prepend(name)
+            if (element.username == user_name){
+                name.style.alignSelf = "flex-end"
+                mondongo = true
+            }
+    
+            if (regexEv(element.content) === 0) {
+                createImage(element.content, mondongo);
+            } else if (regexEv(element.content) === 1) {
+                await urlPreview(element.content, mondongo); // Esperamos a que se complete la llamada a urlPreview
+            } else {
+                createMessage(element.content, mondongo);
+            }
+        }
+    } else {
+        for (const element of posts) {
+            mondongo = false;
+            const name = document.createElement("p")
+            name.textContent = element.username
+            name.style.color = "white"
+            div3_2.prepend(name)
+            if (element.username == user_name){
+                name.style.alignSelf = "flex-end"
+                mondongo = true
+            }
+    
+            if (regexEv(element.content) === 0) {
+                createImage(element.content, mondongo);
+            } else if (regexEv(element.content) === 1) {
+                await urlPreview(element.content, mondongo); // Esperamos a que se complete la llamada a urlPreview
+            } else {
+                createMessage(element.content, mondongo);
+            }
+        }
+    }
+}
+
+sendChats(myPosts)
