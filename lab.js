@@ -644,58 +644,58 @@ async function urlData(url){
 }
 
 async function urlPreview(url, mondongo) {
-    // const data = await urlData(url);
+    const data = await urlData(url);
 
-    // if (data) { // Verifica si data está definido
-    //     const mensaje = document.createElement("div");
-    //     mensaje.className = "message";
+    if (data) { // Verifica si data está definido
+        const mensaje = document.createElement("div");
+        mensaje.className = "message";
 
-    //     mensaje.style.backgroundColor = messages;
-    //     mensaje.style.color = "black";
-    //     mensaje.style.marginTop = "5px";
-    //     mensaje.style.padding = "5px";
-    //     mensaje.style.display = "flex";
-    //     mensaje.style.alignItems = "center";
-    //     mensaje.style.flexDirection = "column";
-    //     mensaje.style.whiteSpace = "pre-line";
-    //     mensaje.style.width = "40%";
-    //     mensaje.animate([
-    //         { transform: "translateX(-300px)" },
-    //         { transform: "translateX(0px)" }
-    //     ], {
-    //         duration: 500,
-    //         iterations: 1,
-    //         fill: "forwards"
-    //     });
+        mensaje.style.backgroundColor = messages;
+        mensaje.style.color = "black";
+        mensaje.style.marginTop = "5px";
+        mensaje.style.padding = "5px";
+        mensaje.style.display = "flex";
+        mensaje.style.alignItems = "center";
+        mensaje.style.flexDirection = "column";
+        mensaje.style.whiteSpace = "pre-line";
+        mensaje.style.width = "40%";
+        mensaje.animate([
+            { transform: "translateX(-300px)" },
+            { transform: "translateX(0px)" }
+        ], {
+            duration: 500,
+            iterations: 1,
+            fill: "forwards"
+        });
 
-    //     const image = document.createElement("img");
-    //     image.src = data.image;
-    //     image.className = "imagen";
-    //     image.style.width = "100%";
-    //     mensaje.appendChild(image);
+        const image = document.createElement("img");
+        image.src = data.image;
+        image.className = "imagen";
+        image.style.width = "100%";
+        mensaje.appendChild(image);
 
-    //     const titulo = document.createElement("p");
-    //     titulo.textContent = data.title;
-    //     mensaje.appendChild(titulo);
+        const titulo = document.createElement("p");
+        titulo.textContent = data.title;
+        mensaje.appendChild(titulo);
 
-    //     const descripcion = document.createElement("p");
-    //     descripcion.textContent = data.description;
-    //     mensaje.appendChild(descripcion);
+        const descripcion = document.createElement("p");
+        descripcion.textContent = data.description;
+        mensaje.appendChild(descripcion);
 
-    //     const link = document.createElement("a");
-    //     link.href = data.url;
-    //     link.innerHTML = data.url;
-    //     mensaje.appendChild(link);
+        const link = document.createElement("a");
+        link.href = data.url;
+        link.innerHTML = data.url;
+        mensaje.appendChild(link);
 
-    //     const div3_2_1 = document.createElement("div");
-    //     div3_2_1.style.display = "flex";
-    //     div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start";
-    //     div3_2.prepend(div3_2_1);
-    //     div3_2_1.append(mensaje);
-    //     div3_2.scrollTop = div3_2.scrollHeight;
-    // } else {
-    //     console.error('El objeto "data" está indefinido o no tiene la estructura esperada.');
-    // }
+        const div3_2_1 = document.createElement("div");
+        div3_2_1.style.display = "flex";
+        div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start";
+        div3_2.prepend(div3_2_1);
+        div3_2_1.append(mensaje);
+        div3_2.scrollTop = div3_2.scrollHeight;
+    } else {
+        console.error('El objeto "data" está indefinido o no tiene la estructura esperada.');
+    }
 }
 
 
