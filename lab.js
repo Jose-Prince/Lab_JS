@@ -1,9 +1,12 @@
 document.body.style.margin = 0;
 
-let posts = obtainPosts()
-let myPosts = null
+let postsCollected = null
+let myPosts = []
+let user_name = localStorage.getItem("nombre") || ""
 
-const user_name = "José Prince"
+if (localStorage.getItem("nombre") != ""){
+    let user_name = ""
+} 
 let receptor = "Grupal"
 let mondongo = false
 
@@ -11,20 +14,26 @@ async function miFuncion() {
 
     let newPosts = await obtainPosts()
 
-    myPosts = newPosts.filter(message1 => !posts.some(message2 => message2.id === message1.id))
+    const difference = newPosts.filter(element => !postsCollected.includes(element))
 
-    if (myPosts.length > 0){
+    console.log(difference)
+    
+    if (difference.length >= 0){
+    
         if (receptor === "Grupal") {
-            sendChats(myPosts)
+            sendChats(difference)
+            console.log("x")
         } else {
-            posts = newPosts
+            console.log("x")
             getMessages(receptor)
         }
     } 
+    posts = newPosts
 }
 
 const intervaloTiempo = 10000
 
+// Llama a setInterval() y pasa la función y el intervalo de tiempo como parámetros
 const intervalID = setInterval(miFuncion, intervaloTiempo);
 
 //Paleta de colores
@@ -62,6 +71,8 @@ function actualizarColores() {
     const nombre = document.getElementById("nombre");
     if (nombre) {
         nombre.style.color = words;
+        nombre.style.backgroundColor = background
+
     }
 
     const theme = document.getElementById("theme");
@@ -89,6 +100,13 @@ function actualizarColores() {
         for (let i = 0; i < messageElements.length; i++) {
             messageElements[i].style.backgroundColor = messages;
         }
+    }
+
+    const name_users = document.querySelectorAll(".name-user")
+    if (name_users) {
+        name_users.forEach(elemento => {
+            elemento.style.color = words
+        })
     }
 }
 
@@ -137,9 +155,15 @@ document.getElementById("top").style.padding = "15px"
 document.getElementById("top").style.fontSize = "20px"
 document.getElementById("top").style.color = words
 
-const receptorName = document.createElement("div")
+const receptorName = document.createElement("button")
 receptorName.innerHTML = receptor
 div3_1.appendChild(receptorName)
+
+receptorName.addEventListener("click", function(){
+    receptorName.innerHTML = "Grupal"
+    receptor = "Grupal"
+    sendChats(myPosts)
+})
 
 const div3_1_2 = document.createElement("textarea")
 div3_1_2.id = "search"
@@ -155,36 +179,40 @@ document.getElementById("search").maxLength="140"
 document.getElementById("search").placeholder = "Buscar"
 
 document.getElementById("search").addEventListener("input", async function() {
-    if (document.getElementById("search").value != ""){
-        document.getElementById("mensajes").innerHTML = ""
-
-        const posts = await obtainPosts()
+    if (user_name != ""){
+        if (document.getElementById("search").value != ""){
+            document.getElementById("mensajes").innerHTML = ""
+    
+            const posts = await obtainPosts()
+            
+            const mensajesFiltrados = posts.filter(elemento => {
+                const nombre = elemento.username
+                const mensaje = elemento.content
         
-        const mensajesFiltrados = posts.filter(elemento => {
-            const nombre = elemento.username
-            const mensaje = elemento.content
-    
-            return (nombre == receptor || receptor == "Grupal") && mensaje.toLowerCase().includes(document.getElementById("search").value.toLowerCase())
-        })
-    
-        mensajesFiltrados.forEach(element => {
-            const name = document.createElement("p")
-            name.textContent = element.username
-            name.style.color = "white"
-            div3_2.prepend(name)
-            if (regexEv(element.content) == 0){
-                createImage(element.content, mondongo)
-            } else if (regexEv(element.content) == 1) {
-                urlPreview(element.content,mondongo)
-            } else {
-                createMessage(element.content, mondongo)
-            } 
-        })
-    } else {
-        if (receptor == "Grupal"){
-            sendChats()
+                return (nombre == receptor || receptor == "Grupal") && mensaje.toLowerCase().includes(document.getElementById("search").value.toLowerCase())
+            })
+        
+            mensajesFiltrados.forEach(element => {
+                const name = document.createElement("p")
+                name.textContent = element.username
+                name.className = "name-user"
+                name.style.color = words
+                name.style.alignSelf = "flex-end"
+                div3_2.prepend(name)
+                if (regexEv(element.content) == 0){
+                    createImage(element.content, mondongo)
+                } else if (regexEv(element.content) == 1) {
+                    urlPreview(element.content,mondongo)
+                } else {
+                    createMessage(element.content, mondongo)
+                } 
+            })
         } else {
-            getMessages(receptor)
+            if (receptor == "Grupal"){
+                sendChats()
+            } else {
+                getMessages(receptor)
+            }
         }
     }
 })
@@ -232,10 +260,21 @@ document.getElementById("perfil").style.width = "50px";
 document.getElementById("perfil").style.height = "50px";
 document.getElementById("perfil").style.borderRadius = "50%";
 
-const nombre_perfil = document.createElement("p");
+const nombre_perfil = document.createElement("textarea");
 nombre_perfil.id = "nombre";
 div4.appendChild(nombre_perfil);
 
+document.getElementById("nombre").addEventListener("input", function() {
+    user_name = document.getElementById("nombre").value
+    localStorage.setItem("nombre", user_name)
+})
+
+document.getElementById("nombre").style.backgroundColor = background
+document.getElementById("nombre").style.resize = "none"
+document.getElementById("nombre").style.width = "60%"
+document.getElementById("nombre").style.fontSize = "20px"
+document.getElementById("nombre").style.height = "70%"
+document.getElementById("nombre").spellcheck = "false"
 document.getElementById("nombre").textContent = user_name;
 document.getElementById("nombre").style.color = words;
 
@@ -279,30 +318,33 @@ textbox.className = "text";
 div5.appendChild(textbox);
 
 document.getElementsByClassName("text")[0].addEventListener("keydown", function(event) {
-    if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
-        const contenido = document.getElementsByClassName("text")[0].value
-        if (contenido != "") {
-            const name = document.createElement("p")
-            name.textContent = user_name
-            name.style.color = "white"
-            div3_2.prepend(name)
-            name.style.alignSelf = "flex-end"
-            mondongo = true
-            if (regexEv(contenido) == 0){
-                createImage(contenido, mondongo)
-            } else if (regexEv(contenido) == 1) {
-                urlPreview(contenido,mondongo)
-            } else {
-                createMessage(contenido, mondongo)
-            } 
-            const objeto = {
-                "username": user_name,
-                "message": contenido
-            } 
-            postPosts(objeto)
-        }    
-        document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
+    if (user_name.length > 0){
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); // Evita que se inserte un salto de línea en el textarea
+            const contenido = document.getElementsByClassName("text")[0].value
+            if (contenido != "") {
+                const name = document.createElement("p")
+                name.textContent = user_name
+                name.className = "name-user"
+                name.style.color = words
+                div3_2.prepend(name)
+                name.style.alignSelf = "flex-end"
+                mondongo = true
+                if (regexEv(contenido) == 0){
+                    createImage(contenido, mondongo)
+                } else if (regexEv(contenido) == 1) {
+                    urlPreview(contenido,mondongo)
+                } else {
+                    createMessage(contenido, mondongo)
+                } 
+                const objeto = {
+                    "username": user_name,
+                    "message": contenido
+                } 
+                postPosts(objeto)
+            }    
+            document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
+        }
     }
 })
 
@@ -325,30 +367,34 @@ document.getElementById("theme").style.backgroundColor = border;
 
 send_button.addEventListener("click", function() {
     const contenido = document.getElementsByClassName("text")[0].value
-    if (contenido != "") {
-        const contenido = document.getElementsByClassName("text")[0].value
-                
+
+    if (user_name.length > 0){
         if (contenido != "") {
-            const name = document.createElement("p")
-            name.textContent = user_name
-            name.style.color = "white"
-            div3_2.prepend(name)
-            name.style.alignSelf = "flex-end"
-            mondongo = true
-            if (regexEv(contenido) == 0){
-                createImage(contenido, mondongo)
-            } else if (regexEv(contenido) == 1) {
-                urlPreview(contenido,mondongo)
-            } else {
-                createMessage(contenido, mondongo)
-            } 
-            const objeto = {
-                "username": user_name,
-                "message": contenido
-            } 
-            postPosts(objeto)
-        }      
-        document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
+            const contenido = document.getElementsByClassName("text")[0].value
+                    
+            if (contenido != "") {
+                const name = document.createElement("p")
+                name.className = "name-user"
+                name.textContent = user_name
+                name.style.color = words
+                div3_2.prepend(name)
+                name.style.alignSelf = "flex-end"
+                mondongo = true
+                if (regexEv(contenido) == 0){
+                    createImage(contenido, mondongo)
+                } else if (regexEv(contenido) == 1) {
+                    urlPreview(contenido,mondongo)
+                } else {
+                    createMessage(contenido, mondongo)
+                } 
+                const objeto = {
+                    "username": user_name,
+                    "message": contenido
+                } 
+                postPosts(objeto)
+            }      
+            document.getElementsByClassName("text")[0].value = ""; // Limpia el contenido del textarea después de enviar el mensaje
+        }
     }
 })
 
@@ -508,6 +554,10 @@ async function obtainPosts(){
 
     const posts = await data.json()
 
+    postsCollected = posts
+    
+    console.log(posts)
+
     return posts
 }
 
@@ -593,69 +643,76 @@ async function urlData(url){
   return info
 }
 
-async function urlPreview(url, mondongo){
-    const data = await urlData(url)
+async function urlPreview(url, mondongo) {
+    // const data = await urlData(url);
 
-    const mensaje = document.createElement("div")
-    mensaje.className = "message"
+    // if (data) { // Verifica si data está definido
+    //     const mensaje = document.createElement("div");
+    //     mensaje.className = "message";
 
-    mensaje.style.backgroundColor = messages
-    mensaje.style.color = "black"
-    mensaje.style.marginTop = "5px"
-    mensaje.style.padding = "5px"
-    mensaje.style.display = "flex"
-    mensaje.style.alignItems = "center"
-    mensaje.style.flexDirection = "column"
-    mensaje.style.whiteSpace = "pre-line"
-    mensaje.style.width = "40%"
-    mensaje.animate([
-        {transform: "translateX(-300px)"},
-        {transform: "translateX(0px)"}
-    ],{
-        duration: 500,
-        iterations: 1,
-        fill: "forwards"
-    })
+    //     mensaje.style.backgroundColor = messages;
+    //     mensaje.style.color = "black";
+    //     mensaje.style.marginTop = "5px";
+    //     mensaje.style.padding = "5px";
+    //     mensaje.style.display = "flex";
+    //     mensaje.style.alignItems = "center";
+    //     mensaje.style.flexDirection = "column";
+    //     mensaje.style.whiteSpace = "pre-line";
+    //     mensaje.style.width = "40%";
+    //     mensaje.animate([
+    //         { transform: "translateX(-300px)" },
+    //         { transform: "translateX(0px)" }
+    //     ], {
+    //         duration: 500,
+    //         iterations: 1,
+    //         fill: "forwards"
+    //     });
 
-    const image = document.createElement("img")
-    image.src = data.image
-    image.className = "imagen"
-    image.style.width = "100%"
-    mensaje.appendChild(image)
+    //     const image = document.createElement("img");
+    //     image.src = data.image;
+    //     image.className = "imagen";
+    //     image.style.width = "100%";
+    //     mensaje.appendChild(image);
 
-    const titulo = document.createElement("p")
-    titulo.textContent = data.title
-    mensaje.appendChild(titulo)
+    //     const titulo = document.createElement("p");
+    //     titulo.textContent = data.title;
+    //     mensaje.appendChild(titulo);
 
-    const descripcion = document.createElement("p")
-    descripcion.textContent = data.description
-    mensaje.appendChild(descripcion)
+    //     const descripcion = document.createElement("p");
+    //     descripcion.textContent = data.description;
+    //     mensaje.appendChild(descripcion);
 
-    const link = document.createElement("a")
-    link.href = data.url
-    link.innerHTML = data.url
-    mensaje.appendChild(link)
+    //     const link = document.createElement("a");
+    //     link.href = data.url;
+    //     link.innerHTML = data.url;
+    //     mensaje.appendChild(link);
 
-    const div3_2_1 = document.createElement("div")
-    div3_2_1.style.display = "flex"
-    div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start"
-    div3_2.prepend(div3_2_1)
-    div3_2_1.append(mensaje);
-    div3_2.scrollTop = div3_2.scrollHeight 
+    //     const div3_2_1 = document.createElement("div");
+    //     div3_2_1.style.display = "flex";
+    //     div3_2_1.style.justifyContent = (receptor == user_name || mondongo) ? "flex-end" : "flex-start";
+    //     div3_2.prepend(div3_2_1);
+    //     div3_2_1.append(mensaje);
+    //     div3_2.scrollTop = div3_2.scrollHeight;
+    // } else {
+    //     console.error('El objeto "data" está indefinido o no tiene la estructura esperada.');
+    // }
 }
 
+
 async function sendChats(mensaje) {
-    document.getElementById("mensajes").innerHTML = "";
+    console.log("Cargando...")
 
     const posts = await obtainPosts(); // Esperamos a que se obtengan los mensajes
 
     // Usamos un bucle for...of en lugar de forEach para poder utilizar async/await correctamente
-    if (mensaje != null){
+    if (mensaje.length > 0){
         for (const element of mensaje){
-            mondongo = false;
+            console.log("New message")
+            mondongo = false
             const name = document.createElement("p")
             name.textContent = element.username
-            name.style.color = "white"
+            name.className = "name-user"
+            name.style.color = words
             div3_2.prepend(name)
             if (element.username == user_name){
                 name.style.alignSelf = "flex-end"
@@ -675,7 +732,8 @@ async function sendChats(mensaje) {
             mondongo = false;
             const name = document.createElement("p")
             name.textContent = element.username
-            name.style.color = "white"
+            name.className = "name-user"
+            name.style.color = words
             div3_2.prepend(name)
             if (element.username == user_name){
                 name.style.alignSelf = "flex-end"
